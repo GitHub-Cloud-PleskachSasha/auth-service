@@ -32,7 +32,6 @@ Page {
                 anchors.centerIn: parent
                 placeholderText: model.placeholder
                 font.pixelSize: 20
-                echoMode: model.type === "password" ? TextField.Password : TextField.Normal
             }
         }
     }
@@ -45,7 +44,6 @@ Page {
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.6
         onClicked: {
-            // Implement sign in logic here
         }
     }
 
