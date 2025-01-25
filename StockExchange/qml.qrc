@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>UserPages/RegisterPage.qml</file>
-        <file>UserPages/LoginPage.qml</file>
-        <file>UserPages/Testpage.qml</file>
-    </qresource>
-</RCC>
