@@ -5,9 +5,7 @@
 
 int main(int argc, char* argv[])
 {
-	//httplib::SSLServer svr("D:/StockExchange/src/cert.pem", "D:/StockExchange/src/key.pem");
 	httplib::SSLServer svr("./cert.pem", "./key.pem");
-	//httplib::Server svr;
 
 	if (!svr.is_valid()) {
 		std::cerr << "Invalid SSL server configuration!" << std::endl;
