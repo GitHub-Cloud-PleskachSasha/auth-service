@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runtime
+      no_cache: true
     depends_on:
       - db
     environment:
@@ -15,8 +17,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - .:/app
-    command: ["/app/StockExchange"]
+      - ./tmp/app_logs_vol:/app/logs
 
   db:
     image: mysql:8.0
@@ -27,7 +28,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./tmp/db_vol:/var/lib/mysql
 
 volumes:
   mysql_data:
