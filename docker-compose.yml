@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  stockexchange:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=stockexchange
+    ports:
+      - "8080:8080"
+    # volumes:
+      # - ./tmp/app_logs_vol:/app/logs
+    networks:
+      - app_network
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stockexchange
+    ports:
+      - "3307:3306"
+    # volumes:
+      # - ./tmp/db_vol:/var/lib/mysql
+    networks:
+      - app_network
+
+networks:
+  app_network: {}
+volumes:
+  mysql_data:

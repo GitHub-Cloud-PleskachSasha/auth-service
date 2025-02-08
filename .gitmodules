@@ -1,0 +1,12 @@
+[submodule "lib/cpp-httplib"]
+	path = lib/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "lib/jwt-cpp"]
+	path = lib/jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git
+[submodule "lib/mysql_orm"]
+	path = lib/mysql_orm
+	url = https://github.com/Ethiraric/mysql_orm.git
+
+
+
