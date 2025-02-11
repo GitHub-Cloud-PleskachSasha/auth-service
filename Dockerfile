@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update && \
-    apt-get install -y cmake g++ git curl libssl-dev && \
+    apt-get install -y cmake g++ git curl libssl-dev libmysqlclient-dev && \
     rm -rf /var/cache/apt && \
     apt-get clean
 

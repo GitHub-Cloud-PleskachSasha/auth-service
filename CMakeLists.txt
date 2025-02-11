@@ -9,12 +9,16 @@ configure_file(${CMAKE_SOURCE_DIR}/src/key.pem ${CMAKE_BINARY_DIR}/key.pem COPYO
 configure_file(${CMAKE_SOURCE_DIR}/src/cert.pem ${CMAKE_BINARY_DIR}/cert.pem COPYONLY)
 
 find_package(OpenSSL REQUIRED)
-#find_package(MySQL REQUIRED)
 
 add_executable(StockExchange src/StockExchange.cpp)
 
 target_link_libraries(StockExchange OpenSSL::SSL OpenSSL::Crypto)	
-# target_link_libraries(StockExchange)
+
+find_library(MYSQL_CLIENT_LIBRARY mysqlclient)
+if(NOT MYSQL_CLIENT_LIBRARY)
+  message(FATAL_ERROR "mysqlclient not found")
+endif()
+target_link_libraries(StockExchange ${MYSQL_CLIENT_LIBRARY})
 
 #maybe delete
 add_custom_command(
