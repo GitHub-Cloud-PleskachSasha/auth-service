@@ -10,7 +10,26 @@ configure_file(${CMAKE_SOURCE_DIR}/src/cert.pem ${CMAKE_BINARY_DIR}/cert.pem COP
 
 find_package(OpenSSL REQUIRED)
 
-add_executable(StockExchange src/StockExchange.cpp)
+set(GEN_DIR ${CMAKE_BINARY_DIR}/generated)
+file(MAKE_DIRECTORY ${GEN_DIR})
+
+find_program(ODB_COMPILER odb)
+if(NOT ODB_COMPILER)
+  message(FATAL_ERROR "Не знайдено ODB компілятор!")
+endif()
+
+set(PERSON_HXX ${CMAKE_SOURCE_DIR}/src/User.hxx)
+set(PERSON_ODB_CPP ${GEN_DIR}/User-odb.cxx)
+
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/generated/User-odb.cxx ${CMAKE_BINARY_DIR}/generated/User-odb.hxx
+  COMMAND odb --generate-schema --generate-query --std c++11
+          --output-dir ${CMAKE_BINARY_DIR}/generated
+          --include-regex 'User.hxx'
+          ${CMAKE_SOURCE_DIR}/src/User.hxx
+  DEPENDS ${CMAKE_SOURCE_DIR}/src/User.hxx
+)
+add_executable(StockExchange src/StockExchange.cpp ${PERSON_ODB_CPP}) 
 
 target_link_libraries(StockExchange OpenSSL::SSL OpenSSL::Crypto)	
 

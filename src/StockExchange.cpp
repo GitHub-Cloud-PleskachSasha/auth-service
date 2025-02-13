@@ -2,11 +2,48 @@
 #include <iostream>
 #include <httplib.h>
 #include <string>
-#include <mysql_orm/Connection.hpp>
+#include <memory>
+
+#include <odb/database.hxx>
+#include <odb/transaction.hxx>
+
+#include <odb/mysql/database.hxx>
+
+#include "person.hxx"
+#include "person-odb.hxx"
 
 
 int main(int argc, char* argv[])
 {
+    try
+    {
+        std::unique_ptr<odb::database> db(
+            new odb::mysql::database("root", "root", "stockexchange", "db", 3306)
+        );
+
+        person p("test@example.com", "password");
+
+        {
+            odb::transaction t(db->begin());
+            db->persist(p);
+            t.commit();
+        }
+
+        {
+            odb::transaction t(db->begin());
+            std::shared_ptr<Person> p2(db->load<Person>(p.id()));
+            std::cout << "User email: " << p2->email() << std::endl;
+            t.commit();
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "ODB Exception: " << e.what() << std::endl;
+        return 1;
+    }
+    
+    return 0;
+
 	httplib::SSLServer svr("./cert.pem", "./key.pem");
 	// httplib::Server svr;
 
