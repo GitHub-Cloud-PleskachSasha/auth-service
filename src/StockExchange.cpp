@@ -21,20 +21,20 @@ int main(int argc, char* argv[])
             new odb::mysql::database("root", "root", "stockexchange", "db", 3306)
         );
 
-        person p("test@example.com", "password");
+        // person p("test@example.com", "password");
 
-        {
-            odb::transaction t(db->begin());
-            db->persist(p);
-            t.commit();
-        }
+        // {
+        //     odb::transaction t(db->begin());
+        //     db->persist(p);
+        //     t.commit();
+        // }
 
-        {
-            odb::transaction t(db->begin());
-            std::shared_ptr<Person> p2(db->load<Person>(p.id()));
-            std::cout << "User email: " << p2->email() << std::endl;
-            t.commit();
-        }
+        // {
+        //     odb::transaction t(db->begin());
+        //     std::shared_ptr<person> p2(db->load<person>(p.id()));
+        //     std::cout << "User email: " << p2->email() << std::endl;
+        //     t.commit();
+        // }
     }
     catch(const std::exception& e)
     {
@@ -46,15 +46,6 @@ int main(int argc, char* argv[])
 
 	httplib::SSLServer svr("./cert.pem", "./key.pem");
 	// httplib::Server svr;
-
-    try {
-        auto connection = mysql_orm::Connection("localhost", 3306, "username", "password", "database");
-        std::cerr << "Goooooooooood" << std::endl;
-    }
-    catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-        return 1;
-    }
 
 	if (!svr.is_valid()) {
 		std::cerr << "Invalid SSL server configuration!1" << std::endl;

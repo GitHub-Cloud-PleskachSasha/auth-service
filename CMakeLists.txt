@@ -18,18 +18,20 @@ if(NOT ODB_COMPILER)
   message(FATAL_ERROR "Не знайдено ODB компілятор!")
 endif()
 
-set(PERSON_HXX ${CMAKE_SOURCE_DIR}/src/User.hxx)
-set(PERSON_ODB_CPP ${GEN_DIR}/User-odb.cxx)
+set(PERSON_HXX ${CMAKE_SOURCE_DIR}/src/person.hxx)
+set(PERSON_ODB_CPP ${GEN_DIR}/person-odb.cxx)
 
 add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/generated/User-odb.cxx ${CMAKE_BINARY_DIR}/generated/User-odb.hxx
-  COMMAND odb --generate-schema --generate-query --std c++11
+  OUTPUT ${CMAKE_BINARY_DIR}/generated/person-odb.cxx ${CMAKE_BINARY_DIR}/generated/person-odb.hxx
+  COMMAND odb --generate-schema --generate-query --database mysql 
           --output-dir ${CMAKE_BINARY_DIR}/generated
-          --include-regex 'User.hxx'
-          ${CMAKE_SOURCE_DIR}/src/User.hxx
-  DEPENDS ${CMAKE_SOURCE_DIR}/src/User.hxx
+          --include-regex 'person.hxx'
+          ${CMAKE_SOURCE_DIR}/src/person.hxx
+  DEPENDS ${CMAKE_SOURCE_DIR}/src/person.hxx
 )
 add_executable(StockExchange src/StockExchange.cpp ${PERSON_ODB_CPP}) 
+
+target_compile_features(StockExchange PUBLIC cxx_std_17)
 
 target_link_libraries(StockExchange OpenSSL::SSL OpenSSL::Crypto)	
 
