@@ -3,7 +3,7 @@ build
 .git
 .vscode
 *.pem
-
+scripts
 
 
 

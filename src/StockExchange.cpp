@@ -9,7 +9,6 @@
 
 #include <odb/mysql/database.hxx>
 
-#include "person.hxx"
 #include "person-odb.hxx"
 
 
@@ -17,9 +16,10 @@ int main(int argc, char* argv[])
 {
     try
     {
-        std::unique_ptr<odb::database> db(
-            new odb::mysql::database("root", "root", "stockexchange", "db", 3306)
-        );
+        // std::cout << "temp message";
+        // std::unique_ptr<odb::database> db(
+        //     new odb::mysql::database("root", "root", "stockexchange", "db", 3306)
+        // );
 
         // person p("test@example.com", "password");
 
@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
     }
     catch(const std::exception& e)
     {
-        std::cerr << "ODB Exception: " << e.what() << std::endl;
-        return 1;
+        // std::cerr << "ODB Exception: " << e.what() << std::endl;
+        // return 1;
     }
     
     return 0;
