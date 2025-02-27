@@ -7,7 +7,8 @@ services:
       dockerfile: Dockerfile
       target: runtime
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=root
@@ -15,8 +16,6 @@ services:
       - DATABASE_NAME=stockexchange
     ports:
       - "8080:8080"
-    # volumes:
-      # - ./tmp/app_logs_vol:/app/logs
     networks:
       - app_network
 
@@ -28,12 +27,16 @@ services:
       MYSQL_DATABASE: stockexchange
     ports:
       - "3307:3306"
-    # volumes:
-      # - ./tmp/db_vol:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
     networks:
       - app_network
 
 networks:
-  app_network: {}
+  app_network: 
 volumes:
   mysql_data:
