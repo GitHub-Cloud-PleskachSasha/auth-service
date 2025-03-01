@@ -39,13 +39,34 @@ int main(int argc, char* argv[])
         std::string email = req.get_param_value("email");
         std::string password = req.get_param_value("password");
 
-
         if (email.empty() || password.empty()) {
+            res.status = 400;
             res.set_content("Email or password is missing!", "text/plain");
             return;
         }
 
-        res.set_content("Login email: " + email + "====pass: " + password, "text/plain");
+        try {
+            odb::transaction t(db->begin());
+        
+            odb::result<person> r(db->query<person>(
+                odb::query<person>::email == email &&
+                odb::query<person>::password == password
+            ));
+        
+            if (r.empty()) {
+                res.status = 401;
+                res.set_content("Login failed: no matching user", "text/plain");
+            } else {
+                res.status = 200;
+                res.set_content("Login is sucsses" "text/plain");
+            }
+        
+            t.commit();
+        }
+        catch (const odb::exception& e) {
+            res.status = 500;
+            res.set_content("Login failed: " + std::string(e.what()), "text/plain");
+        }
     });
 
 	svr.Post("/register", [&db](const httplib::Request& req, httplib::Response& res) {
@@ -53,25 +74,31 @@ int main(int argc, char* argv[])
         std::string password = req.get_param_value("password");
 
         if (email.empty() || password.empty()) {
+            res.status = 400;
             res.set_content("Email or password is missing!", "text/plain");
             return;
         }
         try {
-            person newPerson(email, password);
-            
             odb::transaction t(db->begin());
-            
+
+            odb::result<person> r(db->query<person>(odb::query<person>::email == email));
+            if (!r.empty()) {
+                res.status = 409;
+                res.set_content("Email вже використовується!", "text/plain");
+                return;
+            }
+
+            person newPerson(email, password);
             db->persist(newPerson);
-            
             t.commit();
-            
+
+            res.status = 201;
             res.set_content("Registration successful for email: " + email, "text/plain");
         }
         catch (const odb::exception& e) {
+            res.status = 500;
             res.set_content("Registration failed: " + std::string(e.what()), "text/plain");
         }
-
-        res.set_content("Registration email1: " + email + "====pass1: " + password, "text/plain");
     });
 
 	!svr.listen("0.0.0.0", 8080) ? (std::cerr << "Server failed to start!" << std::endl) : (std::cout << "Server is running!" << std::endl);
