@@ -4,6 +4,7 @@ project(StockExchange)
 
 include_directories(${CMAKE_SOURCE_DIR}/lib/cpp-httplib)
 include_directories(${CMAKE_SOURCE_DIR}/lib/mysql_orm/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/jwt-cpp/include)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 configure_file(${CMAKE_SOURCE_DIR}/src/key.pem ${CMAKE_BINARY_DIR}/key.pem COPYONLY)

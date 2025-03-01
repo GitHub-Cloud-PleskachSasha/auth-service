@@ -10,6 +10,7 @@ public:
 
   const std::string& email () const { return email_; }
   const std::string& password () const { return password_; }
+  unsigned long getId() const { return id; }
 
 private:
   person () {};             
