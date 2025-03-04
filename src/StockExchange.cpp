@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <jwt-cpp/jwt.h>
+#include <nlohmann/json.hpp>
 
 #include <odb/database.hxx>
 #include <odb/transaction.hxx>
@@ -99,7 +100,9 @@ int main(int argc, char* argv[])
                     .sign(jwt::algorithm::hs256{"secret_key"}); 
 
                 res.status = 200;
-                res.set_content("{token:" + token + "", "application/json");
+                nlohmann::json responseJson;
+                responseJson["token"] = token;
+                res.set_content(responseJson.dump(), "application/json");
             }
         
             t.commit();

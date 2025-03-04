@@ -7,6 +7,9 @@
 [submodule "lib/mysql_orm"]
 	path = lib/mysql_orm
 	url = https://github.com/Ethiraric/mysql_orm.git
+[submodule "lib/nlohmann"]
+	path = lib/nlohmann
+	url = https://github.com/nlohmann/json.git
 
 
 
