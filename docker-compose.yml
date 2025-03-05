@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  stockexchange:
+  authservice:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
       - DATABASE_HOST=db
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
-      - DATABASE_NAME=stockexchange
+      - DATABASE_NAME=authservice
     ports:
       - "8080:8080"
     networks:
@@ -24,7 +24,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: stockexchange
+      MYSQL_DATABASE: authservice
     ports:
       - "3307:3306"
     healthcheck:

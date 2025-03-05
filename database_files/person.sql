@@ -2,11 +2,14 @@
  * compiler for C++.
  */
 
-DROP TABLE IF EXISTS `persons`;
+DROP TABLE IF EXISTS `person`;
 
-CREATE TABLE `persons` (
+CREATE TABLE `person` (
   `id` BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `email` TEXT NOT NULL,
   `password` TEXT NOT NULL)
  ENGINE=InnoDB;
+
+CREATE UNIQUE INDEX `email_i`
+  ON `person` (`email`);
 

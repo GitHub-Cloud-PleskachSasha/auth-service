@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	}
 
     std::unique_ptr<odb::database> db(
-        new odb::mysql::database("root", "root", "stockexchange", "db", 3306)
+        new odb::mysql::database("root", "root", "authservice", "db", 3306)
     );
     
     {
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
                 person user = *r.begin();
 
                 auto token = jwt::create()
-                    .set_issuer("stockexchange")        
+                    .set_issuer("authservice")        
                     .set_type("JWS")                      
                     .set_issued_at(std::chrono::system_clock::now()) 
                     .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours(24)) 
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     
             auto verifier = jwt::verify()
                 .allow_algorithm(jwt::algorithm::hs256{"secret_key"})
-                .with_issuer("stockexchange");
+                .with_issuer("authservice");
     
             verifier.verify(decoded_token);
     

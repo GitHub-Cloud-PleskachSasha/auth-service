@@ -4,8 +4,8 @@
 // compiler for C++.
 //
 
-#ifndef PERSONS_ODB_HXX
-#define PERSONS_ODB_HXX
+#ifndef PERSON_ODB_HXX
+#define PERSON_ODB_HXX
 
 #include <odb/version.hxx>
 
@@ -15,7 +15,7 @@
 
 #include <odb/pre.hxx>
 
-#include "persons.hxx"
+#include "person.hxx"
 
 #include <memory>
 #include <cstddef>
@@ -32,25 +32,25 @@
 
 namespace odb
 {
-  // persons
+  // person
   //
   template <>
-  struct class_traits< ::persons >
+  struct class_traits< ::person >
   {
     static const class_kind kind = class_object;
   };
 
   template <>
-  class access::object_traits< ::persons >
+  class access::object_traits< ::person >
   {
     public:
-    typedef ::persons object_type;
-    typedef ::persons* pointer_type;
+    typedef ::person object_type;
+    typedef ::person* pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
     static const bool polymorphic = false;
 
-    typedef long long unsigned int id_type;
+    typedef long unsigned int id_type;
 
     static const bool auto_id = true;
 
@@ -84,11 +84,11 @@ namespace odb
 
 namespace odb
 {
-  // persons
+  // person
   //
   template <>
-  class access::object_traits_impl< ::persons, id_mysql >:
-    public access::object_traits< ::persons >
+  class access::object_traits_impl< ::person, id_mysql >:
+    public access::object_traits< ::person >
   {
     public:
     struct id_image_type
@@ -101,7 +101,7 @@ namespace odb
 
     struct image_type
     {
-      // id_
+      // id
       //
       unsigned long long id_value;
       my_bool id_null;
@@ -204,14 +204,14 @@ namespace odb
   };
 
   template <>
-  class access::object_traits_impl< ::persons, id_common >:
-    public access::object_traits_impl< ::persons, id_mysql >
+  class access::object_traits_impl< ::person, id_common >:
+    public access::object_traits_impl< ::person, id_mysql >
   {
   };
 }
 
-#include "persons-odb.ixx"
+#include "person-odb.ixx"
 
 #include <odb/post.hxx>
 
-#endif // PERSONS_ODB_HXX
+#endif // PERSON_ODB_HXX

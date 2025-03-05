@@ -37,8 +37,8 @@ RUN apt-get update && \
     rm -rf /var/cache/apt && \
     apt-get clean
     
-COPY --from=builder /app/build/StockExchange /app/
+COPY --from=builder /app/build/AuthService /app/
 COPY --from=builder /app/cert.pem /app/
 COPY --from=builder /app/key.pem /app/
 
-CMD ["/app/StockExchange"]
+CMD ["/app/AuthService"]

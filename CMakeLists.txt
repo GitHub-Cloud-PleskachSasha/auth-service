@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(StockExchange)
+project(AuthService)
 
 include_directories(${CMAKE_SOURCE_DIR}/lib/cpp-httplib)
 include_directories(${CMAKE_SOURCE_DIR}/lib/mysql_orm/include)
@@ -31,11 +31,11 @@ add_custom_command(
 )
 
 include_directories(${GEN_DIR})
-add_executable(StockExchange src/StockExchange.cpp ${GEN_DIR}/person-odb.hxx ${GEN_DIR}/person-odb.cxx) 
+add_executable(AuthService src/AuthService.cpp ${GEN_DIR}/person-odb.hxx ${GEN_DIR}/person-odb.cxx) 
 
-target_compile_features(StockExchange PUBLIC cxx_std_17)
+target_compile_features(AuthService PUBLIC cxx_std_17)
 
-target_link_libraries(StockExchange 
+target_link_libraries(AuthService 
   OpenSSL::SSL 
   OpenSSL::Crypto
   odb
@@ -46,12 +46,12 @@ find_library(MYSQL_CLIENT_LIBRARY mysqlclient)
 if(NOT MYSQL_CLIENT_LIBRARY)
   message(FATAL_ERROR "mysqlclient not found")
 endif()
-target_link_libraries(StockExchange ${MYSQL_CLIENT_LIBRARY})
+target_link_libraries(AuthService ${MYSQL_CLIENT_LIBRARY})
 
 add_custom_command(
-    TARGET StockExchange POST_BUILD
+    TARGET AuthService POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/src/key.pem $<TARGET_FILE_DIR:StockExchange>/key.pem
+            ${CMAKE_SOURCE_DIR}/src/key.pem $<TARGET_FILE_DIR:AuthService>/key.pem
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/src/cert.pem $<TARGET_FILE_DIR:StockExchange>/cert.pem
+            ${CMAKE_SOURCE_DIR}/src/cert.pem $<TARGET_FILE_DIR:AuthService>/cert.pem
 )

@@ -6,19 +6,19 @@
 
 namespace odb
 {
-  // persons
+  // person
   //
 
   inline
-  access::object_traits< ::persons >::id_type
-  access::object_traits< ::persons >::
+  access::object_traits< ::person >::id_type
+  access::object_traits< ::person >::
   id (const object_type& o)
   {
-    return o.id_;
+    return o.id;
   }
 
   inline
-  void access::object_traits< ::persons >::
+  void access::object_traits< ::person >::
   callback (database& db, object_type& x, callback_event e)
   {
     ODB_POTENTIALLY_UNUSED (db);
@@ -27,7 +27,7 @@ namespace odb
   }
 
   inline
-  void access::object_traits< ::persons >::
+  void access::object_traits< ::person >::
   callback (database& db, const object_type& x, callback_event e)
   {
     ODB_POTENTIALLY_UNUSED (db);
@@ -38,11 +38,11 @@ namespace odb
 
 namespace odb
 {
-  // persons
+  // person
   //
 
   inline
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   erase (database& db, const object_type& obj)
   {
     callback (db, obj, callback_event::pre_erase);
@@ -51,7 +51,7 @@ namespace odb
   }
 
   inline
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   load_ (statements_type& sts,
          object_type& obj,
          bool)

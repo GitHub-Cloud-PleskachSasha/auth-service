@@ -6,7 +6,7 @@
 
 #include <odb/pre.hxx>
 
-#include "persons-odb.hxx"
+#include "person-odb.hxx"
 
 #include <cassert>
 #include <cstring>  // std::memcpy
@@ -25,10 +25,10 @@
 
 namespace odb
 {
-  // persons
+  // person
   //
 
-  struct access::object_traits_impl< ::persons, id_mysql >::extra_statement_cache_type
+  struct access::object_traits_impl< ::person, id_mysql >::extra_statement_cache_type
   {
     extra_statement_cache_type (
       mysql::connection&,
@@ -40,8 +40,8 @@ namespace odb
     }
   };
 
-  access::object_traits_impl< ::persons, id_mysql >::id_type
-  access::object_traits_impl< ::persons, id_mysql >::
+  access::object_traits_impl< ::person, id_mysql >::id_type
+  access::object_traits_impl< ::person, id_mysql >::
   id (const id_image_type& i)
   {
     mysql::database* db (0);
@@ -50,7 +50,7 @@ namespace odb
     id_type id;
     {
       mysql::value_traits<
-          long long unsigned int,
+          long unsigned int,
           mysql::id_ulonglong >::set_value (
         id,
         i.id_value,
@@ -60,7 +60,7 @@ namespace odb
     return id;
   }
 
-  bool access::object_traits_impl< ::persons, id_mysql >::
+  bool access::object_traits_impl< ::person, id_mysql >::
   grow (image_type& i,
         my_bool* t)
   {
@@ -69,7 +69,7 @@ namespace odb
 
     bool grew (false);
 
-    // id_
+    // id
     //
     t[0UL] = 0;
 
@@ -92,7 +92,7 @@ namespace odb
     return grew;
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   bind (MYSQL_BIND* b,
         image_type& i,
         mysql::statement_kind sk)
@@ -103,7 +103,7 @@ namespace odb
 
     std::size_t n (0);
 
-    // id_
+    // id
     //
     if (sk != statement_update)
     {
@@ -135,7 +135,7 @@ namespace odb
     n++;
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   bind (MYSQL_BIND* b, id_image_type& i)
   {
     std::size_t n (0);
@@ -145,7 +145,7 @@ namespace odb
     b[n].is_null = &i.id_null;
   }
 
-  bool access::object_traits_impl< ::persons, id_mysql >::
+  bool access::object_traits_impl< ::person, id_mysql >::
   init (image_type& i,
         const object_type& o,
         mysql::statement_kind sk)
@@ -158,16 +158,16 @@ namespace odb
 
     bool grew (false);
 
-    // id_
+    // id
     //
     if (sk == statement_insert)
     {
-      long long unsigned int const& v =
-        o.id_;
+      long unsigned int const& v =
+        o.id;
 
       bool is_null (false);
       mysql::value_traits<
-          long long unsigned int,
+          long unsigned int,
           mysql::id_ulonglong >::set_image (
         i.id_value, is_null, v);
       i.id_null = is_null;
@@ -218,7 +218,7 @@ namespace odb
     return grew;
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   init (object_type& o,
         const image_type& i,
         database* db)
@@ -227,14 +227,14 @@ namespace odb
     ODB_POTENTIALLY_UNUSED (i);
     ODB_POTENTIALLY_UNUSED (db);
 
-    // id_
+    // id
     //
     {
-      long long unsigned int& v =
-        o.id_;
+      long unsigned int& v =
+        o.id;
 
       mysql::value_traits<
-          long long unsigned int,
+          long unsigned int,
           mysql::id_ulonglong >::set_value (
         v,
         i.id_value,
@@ -272,47 +272,47 @@ namespace odb
     }
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   init (id_image_type& i, const id_type& id)
   {
     {
       bool is_null (false);
       mysql::value_traits<
-          long long unsigned int,
+          long unsigned int,
           mysql::id_ulonglong >::set_image (
         i.id_value, is_null, id);
       i.id_null = is_null;
     }
   }
 
-  const char access::object_traits_impl< ::persons, id_mysql >::persist_statement[] =
-  "INSERT INTO `persons` "
+  const char access::object_traits_impl< ::person, id_mysql >::persist_statement[] =
+  "INSERT INTO `person` "
   "(`id`, "
   "`email`, "
   "`password`) "
   "VALUES "
   "(?, ?, ?)";
 
-  const char access::object_traits_impl< ::persons, id_mysql >::find_statement[] =
+  const char access::object_traits_impl< ::person, id_mysql >::find_statement[] =
   "SELECT "
-  "`persons`.`id`, "
-  "`persons`.`email`, "
-  "`persons`.`password` "
-  "FROM `persons` "
-  "WHERE `persons`.`id`=?";
+  "`person`.`id`, "
+  "`person`.`email`, "
+  "`person`.`password` "
+  "FROM `person` "
+  "WHERE `person`.`id`=?";
 
-  const char access::object_traits_impl< ::persons, id_mysql >::update_statement[] =
-  "UPDATE `persons` "
+  const char access::object_traits_impl< ::person, id_mysql >::update_statement[] =
+  "UPDATE `person` "
   "SET "
   "`email`=?, "
   "`password`=? "
   "WHERE `id`=?";
 
-  const char access::object_traits_impl< ::persons, id_mysql >::erase_statement[] =
-  "DELETE FROM `persons` "
+  const char access::object_traits_impl< ::person, id_mysql >::erase_statement[] =
+  "DELETE FROM `person` "
   "WHERE `id`=?";
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   persist (database& db, object_type& obj)
   {
     using namespace mysql;
@@ -357,14 +357,14 @@ namespace odb
     if (!st.execute ())
       throw object_already_persistent ();
 
-    obj.id_ = id (sts.id_image ());
+    obj.id = id (sts.id_image ());
 
     callback (db,
               static_cast<const object_type&> (obj),
               callback_event::post_persist);
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   update (database& db, const object_type& obj)
   {
     ODB_POTENTIALLY_UNUSED (db);
@@ -423,7 +423,7 @@ namespace odb
     pointer_cache_traits::update (db, obj);
   }
 
-  void access::object_traits_impl< ::persons, id_mysql >::
+  void access::object_traits_impl< ::person, id_mysql >::
   erase (database& db, const id_type& id)
   {
     using namespace mysql;
@@ -450,8 +450,8 @@ namespace odb
     pointer_cache_traits::erase (db, id);
   }
 
-  access::object_traits_impl< ::persons, id_mysql >::pointer_type
-  access::object_traits_impl< ::persons, id_mysql >::
+  access::object_traits_impl< ::person, id_mysql >::pointer_type
+  access::object_traits_impl< ::person, id_mysql >::
   find (database& db, const id_type& id)
   {
     using namespace mysql;
@@ -506,7 +506,7 @@ namespace odb
     return p;
   }
 
-  bool access::object_traits_impl< ::persons, id_mysql >::
+  bool access::object_traits_impl< ::person, id_mysql >::
   find (database& db, const id_type& id, object_type& obj)
   {
     using namespace mysql;
@@ -540,7 +540,7 @@ namespace odb
     return true;
   }
 
-  bool access::object_traits_impl< ::persons, id_mysql >::
+  bool access::object_traits_impl< ::person, id_mysql >::
   reload (database& db, object_type& obj)
   {
     using namespace mysql;
@@ -569,7 +569,7 @@ namespace odb
     return true;
   }
 
-  bool access::object_traits_impl< ::persons, id_mysql >::
+  bool access::object_traits_impl< ::person, id_mysql >::
   find_ (statements_type& sts,
          const id_type* id)
   {
