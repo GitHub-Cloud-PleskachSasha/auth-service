@@ -7,6 +7,9 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/mysql_orm/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/jwt-cpp/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/nlohmann/json/include)
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/models)
+include_directories(${CMAKE_SOURCE_DIR}/src/services)
+include_directories(${CMAKE_SOURCE_DIR}/src/repositories)
 
 configure_file(${CMAKE_SOURCE_DIR}/src/key.pem ${CMAKE_BINARY_DIR}/key.pem COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/src/cert.pem ${CMAKE_BINARY_DIR}/cert.pem COPYONLY)
@@ -26,12 +29,12 @@ set(PERSON_ODB_CPP ${GEN_DIR}/person-odb.cxx)
 
 add_custom_command(
   OUTPUT ${GEN_DIR}/person-odb.cxx ${GEN_DIR}/person-odb.hxx
-  COMMAND odb -d mysql --generate-query --generate-schema --output-dir ${GEN_DIR} ${CMAKE_SOURCE_DIR}/src/person.hxx
-  DEPENDS ${CMAKE_SOURCE_DIR}/src/person.hxx
+  COMMAND odb -d mysql --generate-query --generate-schema --output-dir ${GEN_DIR} ${CMAKE_SOURCE_DIR}/src/models/person.hxx
+  DEPENDS ${CMAKE_SOURCE_DIR}/src/models/person.hxx
 )
 
 include_directories(${GEN_DIR})
-add_executable(AuthService src/AuthService.cpp ${GEN_DIR}/person-odb.hxx ${GEN_DIR}/person-odb.cxx) 
+add_executable(AuthService src/main.cpp ${GEN_DIR}/person-odb.hxx ${GEN_DIR}/person-odb.cxx) 
 
 target_compile_features(AuthService PUBLIC cxx_std_17)
 
