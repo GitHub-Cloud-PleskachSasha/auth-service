@@ -24,20 +24,23 @@ public:
             return res;
         }
 
-        if (repo->emailExists(email)) {
-            res.status = 409;
-            res.set_content("Email is already in use!", "text/plain");
-            return res;
-        }
-        
         try {
+            if (repo->emailExists(email)) {
+                res.status = 409;
+                res.set_content("Email is already in use!", "text/plain");
+                return res;
+            }
+        
             repo->createPerson(email, password);
             res.status = 201;
             res.set_content("Registration successful for email: " + email, "text/plain");
+        } catch (const odb::exception& e) {
+            res.status = 500;
+            res.set_content("Database error: " + std::string(e.what()), "text/plain");
         }
         catch (const std::exception& e) {
             res.status = 500;
-            res.set_content("Registration failed: " + std::string(e.what()), "text/plain");
+            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
         }
 
         return res;
@@ -75,6 +78,10 @@ public:
             res.status = 500;
             res.set_content("Login failed: " + std::string(e.what()), "text/plain");
         }
+        catch (const std::exception& e) {
+            res.status = 500;
+            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
+        }
 
         return res;
     }
@@ -111,7 +118,6 @@ public:
             res.set_content(response_body, "application/json");
         }
         catch (const std::exception& e) {
-
             res.status = 401;
             res.set_content(std::string("Invalid token: ") + e.what(), "text/plain");
         }
@@ -119,6 +125,51 @@ public:
         return res;
     }
 
+    httplib::Response changePassword(const httplib::Request& req) {
+        httplib::Response res;
+    
+        std::string email = req.get_param_value("email");
+        std::string oldPassword = req.get_param_value("old_password");
+        std::string newPassword = req.get_param_value("new_password");
+    
+        if (email.empty() || oldPassword.empty() || newPassword.empty()) {
+            res.status = 400;
+            res.set_content("Email, old or new password missing!", "text/plain");
+            return res;
+        }
+    
+        try {
+            bool isCreated = repo->personExist(email, oldPassword);
+           
+            if (isCreated) {
+                res.status = 401;
+                res.set_content("Password change failed: incorrect email or old password.", "text/plain");
+                return res;
+            }
+    
+            bool isUpdated = repo->changePassword(email, oldPassword, newPassword);
+            if (!isUpdated) {
+                res.status = 400;
+                res.set_content("Failed to update password", "text/plain");
+            } else {
+                nlohmann::json responseJson;
+                responseJson["message"] = "Password successfully updated";
+    
+                res.status = 200;
+                res.set_content(responseJson.dump(), "application/json");
+            }
+        }
+        catch (const odb::exception& e) {
+            res.status = 500;
+            res.set_content("Error while changing password:" + std::string(e.what()), "text/plain");
+        }
+        catch (const std::exception& e) {
+            res.status = 500;
+            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
+        }
+    
+        return res;
+    }
 private:
     std::shared_ptr<PersonRepository> repo;
 };

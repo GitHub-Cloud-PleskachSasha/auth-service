@@ -29,7 +29,6 @@ int main(int argc, char* argv[])
 
     auto authService = std::make_shared<AuthService>(repo);
 
-
 	svr.Post("/register", [&db, authService](const httplib::Request& req, httplib::Response& res) {
         try {
             res = authService->registerUser(req);
@@ -40,7 +39,7 @@ int main(int argc, char* argv[])
         }
     });
 
-	svr.Post("/login", [&db, authService](const httplib::Request& req, httplib::Response& res) {
+	svr.Get("/login", [&db, authService](const httplib::Request& req, httplib::Response& res) {
         try {
             res = authService->loginUser(req);
         }
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
         }
     });
 
-    svr.Post("/validate", [&db, authService](const httplib::Request& req, httplib::Response& res) {
+    svr.Get("/validate", [&db, authService](const httplib::Request& req, httplib::Response& res) {
         try {
             res = authService->validateToken(req);
         }
@@ -59,8 +58,17 @@ int main(int argc, char* argv[])
             res.set_content("Registration failed: " + std::string(e.what()), "text/plain");
         }
     });
-    
 
+    svr.Post("/change-password", [&db, authService](const httplib::Request& req, httplib::Response& res) {
+        try {
+            res = authService->changePassword(req);
+        }
+        catch (const odb::exception& e) {
+            res.status = 500;
+            res.set_content("Registration failed: " + std::string(e.what()), "text/plain");
+        }
+    });
+    
 	!svr.listen("0.0.0.0", 8080) ? (std::cerr << "Server failed to start!" << std::endl) : (std::cout << "Server is running!" << std::endl);
 	
 	return 0;

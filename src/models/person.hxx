@@ -5,13 +5,14 @@
 class person
 {
 public:
-  person (const std::string& email_, const std::string& password_) 
-            :email_(email_), password_(password_) {}
+  person (const std::string& email, const std::string& password) 
+            :m_email(email), m_password(password) {}
 
-  const std::string& email () const { return email_; }
-  const std::string& password () const { return password_; }
+  const std::string& email () const { return m_email; }
+  const std::string& password () const { return m_password; }
   unsigned long getId() const { return id; }
 
+  void setPassword(const std::string& newPassword) { m_password = newPassword; }
 private:
   person () {};             
 
@@ -21,7 +22,7 @@ private:
   unsigned long id;
 
   #pragma db unique
-  std::string email_;
-  std::string password_;
+  std::string m_email;
+  std::string m_password;
 };
   
