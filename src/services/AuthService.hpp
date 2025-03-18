@@ -5,6 +5,34 @@
 #include <jwt-cpp/jwt.h>
 #include "../repositories/PersonRepository.hpp"
 
+struct RegistrationResult {
+    bool success;
+    int errorCode;
+    std::string errorMessage;
+};
+
+struct LoginResult {
+    bool success;
+    int errorCode;
+    std::string errorMessage;
+    std::string token;
+};
+
+struct TokenValidationResult {
+    bool success;
+    int errorCode;
+    std::string errorMessage;
+    bool valid;
+    std::string userId;
+    std::string email;
+};
+
+struct PasswordChangeResult {
+    bool success;
+    int errorCode;
+    std::string errorMessage;
+};
+
 class AuthService {
 public:
     AuthService(std::shared_ptr<PersonRepository> repo)
@@ -12,92 +40,86 @@ public:
 
     }
 
-    httplib::Response registerUser(const httplib::Request& req) {
-        httplib::Response res;
-
-        std::string email = req.get_param_value("email");
-        std::string password = req.get_param_value("password");
+    RegistrationResult registerUser(const std::string& email, const std::string& password) {
+        RegistrationResult result;
 
         if (email.empty() || password.empty()) {
-            res.status = 400;
-            res.set_content("Email or password is missing!", "text/plain");
-            return res;
+            result.success = false;
+            result.errorCode = 400;
+            result.errorMessage = "Email or password is missing!";
+            return result;
         }
 
         try {
             if (repo->emailExists(email)) {
-                res.status = 409;
-                res.set_content("Email is already in use!", "text/plain");
-                return res;
+                result.success = false;
+                result.errorCode = 409;
+                result.errorMessage = "Email is already in use!";
+                return result;
             }
-        
             repo->createPerson(email, password);
-            res.status = 201;
-            res.set_content("Registration successful for email: " + email, "text/plain");
+            result.success = true;
+            result.errorCode = 0;
+            result.errorMessage = "";
         } catch (const odb::exception& e) {
-            res.status = 500;
-            res.set_content("Database error: " + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Database error: " + std::string(e.what());
         }
         catch (const std::exception& e) {
-            res.status = 500;
-            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Unexpected error: " + std::string(e.what());
         }
 
-        return res;
+        return result;
     }
-
-    httplib::Response loginUser(const httplib::Request& req) {
-        httplib::Response res;
-
-        std::string email = req.get_param_value("email");
-        std::string password = req.get_param_value("password");
+    
+    LoginResult loginUser(const std::string& email, const std::string& password) {
+        LoginResult result;
 
         if (email.empty() || password.empty()) {
-            res.status = 400;
-            res.set_content("Email or password is missing!", "text/plain");
-            return res; 
+            result.success = false;
+            result.errorCode = 400;
+            result.errorMessage = "Email or password is missing!";
+            return result;
         }
 
         try {
             bool isCreated = repo->personExist(email, password);
            
             if (isCreated) {
-                res.status = 401;
-                res.set_content("Login failed: no matching user", "text/plain");
+                result.success = false;
+                result.errorCode = 401;
+                result.errorMessage = "Login failed: no matching user";
             } else {
-                auto token = repo->loginPerson(email, password);
-            
-                nlohmann::json responseJson;
-                responseJson["token"] = token;
-
-                res.status = 200;
-                res.set_content(responseJson.dump(), "application/json");
+                result.token = repo->loginPerson(email, password);
+                result.success = true;
+                result.errorCode = 0;
             }
         }
         catch (const odb::exception& e) {
-            res.status = 500;
-            res.set_content("Login failed: " + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Database error: " + std::string(e.what());
         }
         catch (const std::exception& e) {
-            res.status = 500;
-            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Unexpected error: " + std::string(e.what());
         }
 
-        return res;
+        return result;
     }
 
-    httplib::Response validateToken(const httplib::Request& req) {
-        httplib::Response res;
+    TokenValidationResult validateToken(const std::string& token) {
+        TokenValidationResult result;
 
-        std::string token;
-        
-        if (req.has_param("token")) {
-            token = req.get_param_value("token");
-        }
-        else {
-            res.status = 400;
-            res.set_content("Token is missing", "text/plain");
-            return res;
+        if (token.empty()) {
+            result.success = false;
+            result.errorCode = 400;
+            result.errorMessage = "Token is missing";
+            return result;
         }
     
         try {
@@ -109,67 +131,67 @@ public:
     
             verifier.verify(decoded_token);
     
-            auto user_id_claim = decoded_token.get_payload_claim("user_id").as_string();
-            auto email_claim   = decoded_token.get_payload_claim("email").as_string();
-    
-            std::string response_body = "{\"valid\": true, \"user_id\": \"" + user_id_claim +
-                                        "\", \"email\": \"" + email_claim + "\"}";
-            res.status = 200;
-            res.set_content(response_body, "application/json");
+            result.userId = decoded_token.get_payload_claim("user_id").as_string();
+            result.email = decoded_token.get_payload_claim("email").as_string();
+            result.valid = true;
+            result.success = true;
+            result.errorCode = 0;
         }
         catch (const std::exception& e) {
-            res.status = 401;
-            res.set_content(std::string("Invalid token: ") + e.what(), "text/plain");
+            result.success = false;
+            result.errorCode = 401;
+            result.errorMessage = std::string("Invalid token: ") + e.what();
+            result.valid = false;
         }
 
-        return res;
+        return result;
     }
 
-    httplib::Response changePassword(const httplib::Request& req) {
-        httplib::Response res;
-    
-        std::string email = req.get_param_value("email");
-        std::string oldPassword = req.get_param_value("old_password");
-        std::string newPassword = req.get_param_value("new_password");
-    
+    PasswordChangeResult changePassword(const std::string& email, const std::string& oldPassword, const std::string& newPassword) {
+        PasswordChangeResult result;
+        
         if (email.empty() || oldPassword.empty() || newPassword.empty()) {
-            res.status = 400;
-            res.set_content("Email, old or new password missing!", "text/plain");
-            return res;
+            result.success = false;
+            result.errorCode = 400;
+            result.errorMessage = "Email, old or new password missing!";
+            return result;
         }
-    
+        
         try {
             bool isCreated = repo->personExist(email, oldPassword);
-           
+            
             if (isCreated) {
-                res.status = 401;
-                res.set_content("Password change failed: incorrect email or old password.", "text/plain");
-                return res;
+                result.success = false;
+                result.errorCode = 401;
+                result.errorMessage = "Password change failed: incorrect email or old password.";
+                return result;
             }
-    
+            
             bool isUpdated = repo->changePassword(email, oldPassword, newPassword);
             if (!isUpdated) {
-                res.status = 400;
-                res.set_content("Failed to update password", "text/plain");
+                result.success = false;
+                result.errorCode = 400;
+                result.errorMessage = "Failed to update password";
             } else {
-                nlohmann::json responseJson;
-                responseJson["message"] = "Password successfully updated";
-    
-                res.status = 200;
-                res.set_content(responseJson.dump(), "application/json");
+                result.success = true;
+                result.errorCode = 0;
+                result.errorMessage = "Password successfully updated";
             }
         }
         catch (const odb::exception& e) {
-            res.status = 500;
-            res.set_content("Error while changing password:" + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Error while changing password:" + std::string(e.what());
         }
         catch (const std::exception& e) {
-            res.status = 500;
-            res.set_content("Unexpected error: " + std::string(e.what()), "text/plain");
+            result.success = false;
+            result.errorCode = 500;
+            result.errorMessage = "Unexpected error: " + std::string(e.what());
         }
-    
-        return res;
+        
+        return result;
     }
+
 private:
     std::shared_ptr<PersonRepository> repo;
 };
