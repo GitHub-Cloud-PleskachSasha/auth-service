@@ -90,7 +90,7 @@ public:
            
             if (isCreated) {
                 result.success = false;
-                result.errorCode = 401;
+                result.errorCode = 409;
                 result.errorMessage = "Login failed: no matching user";
             } else {
                 result.token = repo->loginPerson(email, password);

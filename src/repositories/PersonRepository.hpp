@@ -26,28 +26,28 @@ public:
     }
 
     bool emailExists(std::string email) {
-        try {
+        // try {
             odb::transaction t(m_db->begin());
             odb::result<person> r(m_db->query<person>(odb::query<person>::email == email));
             t.commit();
 
             return !r.empty();
-        } catch (const odb::exception& e) {
-            throw; 
-        }
+        // } catch (const odb::exception& e) {
+        //     throw; 
+        // }
     }
     void createPerson(std::string email, std::string password) {
-        try {
+        // try {
             odb::transaction t(m_db->begin());
             person newPerson(email, password);
             m_db->persist(newPerson);
             t.commit();
-        } catch (const odb::exception& e) {
-            throw; 
-        }
+        // } catch (const odb::exception& e) {
+            // throw; 
+        // }
     }
     bool personExist(std::string email, std::string password) {
-        try {
+        // try {
             odb::transaction t(m_db->begin());
     
             odb::result<person> p(m_db->query<person>(
@@ -56,25 +56,25 @@ public:
             ));
 
             return p.empty();
-        } catch (const odb::exception& e) {
-            throw; 
-        }
+        // } catch (const odb::exception& e) {
+            // throw; 
+        // }
     }
     odb::result<person> getPerson(std::string email, std::string password) {
-        try {
+        // try {
             odb::result<person> p(m_db->query<person>(
                 odb::query<person>::email == email &&
                 odb::query<person>::password == password
             ));
                 
             return p;
-        } catch (const odb::exception& e) {
-            throw; 
-        }
+        // } catch (const odb::exception& e) {
+            // throw; 
+        // }
     }
 
     auto loginPerson(std::string email, std::string password) {
-        try {
+        // try {
             odb::transaction t(m_db->begin());
 
             odb::result<person> p = getPerson(email, password);
@@ -92,9 +92,9 @@ public:
 
 
             return token;        
-        } catch (const odb::exception& e) {
-            throw; 
-        }
+        // } catch (const odb::exception& e) {
+            // throw; 
+        // }
     }
 
 
