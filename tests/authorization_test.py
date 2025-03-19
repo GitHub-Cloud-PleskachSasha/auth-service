@@ -1,7 +1,26 @@
 import pytest
 import requests
+import pymysql
 
 BASE_URL = "https://localhost:8080"
+
+@pytest.fixture(autouse=True)
+def clean_db():
+    connection = pymysql.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        database="authservice",
+        port=3307,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM person;")
+        connection.commit()
+    finally:
+        connection.close()
 
 # -----------------------------------------
 @pytest.fixture
