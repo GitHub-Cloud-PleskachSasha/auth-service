@@ -21,50 +21,49 @@ def clean_db():
         connection.commit()
     finally:
         connection.close()
-
 # -----------------------------------------
-@pytest.fixture
-def new_user_1():
-    return {
-        "email": "testuser1@example.com",
-        "password": "TestPass123!"
-    }
 
-def test_registration_success(new_user_1):
+def test_registration_success():
     url = f"{BASE_URL}/register"
-    response = requests.post(url, data=new_user_1, verify=False)
+    response = requests.post(
+        url,
+        data={
+            "email": "testuser1@example.com",
+            "password": "TestPass123!"
+        },
+        verify=False
+    )
     assert response.status_code == 201, f"Expected 201, received {response.status_code}"
 # -----------------------------------------
 
-@pytest.fixture
-def new_user_2():
-    return {
+def test_registration_duplicate():
+    url = f"{BASE_URL}/register"
+    user = {
         "email": "testuser2@example.com",
         "password": "TestPass123!"
     }
-
-def test_registration_duplicate(new_user_2):
-    url = f"{BASE_URL}/register"
-    response1 = requests.post(url, data=new_user_2, verify=False)
+    response1 = requests.post(
+        url, 
+        data=user, 
+        verify=False
+    )
     assert response1.status_code == 201, f"Expected 201, received {response1.status_code}"
     
-    response2 = requests.post(url, data=new_user_2, verify=False)
+    response2 = requests.post(url, data=user, verify=False)
     assert response2.status_code == 500, f"Expected 500 when duplicating, received{response2.status_code}"
 # -----------------------------------------
 
-@pytest.fixture
-def new_user_3():
-    return {
+def test_login_success():
+    register_url = f"{BASE_URL}/register"
+    user = {
         "email": "testuser3@example.com",
         "password": "TestPass123!"
     }
 
-def test_login_success(new_user_3):
-    register_url = f"{BASE_URL}/register"
-    requests.post(register_url, data=new_user_3, verify=False)
+    requests.post(register_url, data=user, verify=False)
     
     login_url = f"{BASE_URL}/login"
-    response = requests.get(login_url, params=new_user_3, verify=False)
+    response = requests.get(login_url, params=user, verify=False)
     assert response.status_code == 200, f"Expected 200, received {response.status_code}"
     
     data = response.json()
@@ -80,18 +79,16 @@ def test_login_invalid():
 # -----------------------------------------
 
 @pytest.fixture
-def new_user_4():
-    return {
+def jwt_token():
+    register_url = f"{BASE_URL}/register"
+    user = {
         "email": "testuser4@example.com",
         "password": "TestPass123!"
     }
-@pytest.fixture
-def jwt_token(new_user_4):
-    register_url = f"{BASE_URL}/register"
-    requests.post(register_url, data=new_user_4, verify=False)
+    requests.post(register_url, data=user, verify=False)
     
     login_url = f"{BASE_URL}/login"
-    response = requests.get(login_url, params=new_user_4, verify=False)
+    response = requests.get(login_url, params=user, verify=False)
     data = response.json()
     token = data.get("token")
     assert token is not None, "JWT token not received during login"
