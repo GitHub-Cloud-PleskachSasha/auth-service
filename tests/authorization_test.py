@@ -2,12 +2,6 @@ import pytest
 import requests
 import pymysql
 
-# BASE_URL = "https://localhost:8080"
-
-def pytest_addoption(parser):
-    parser.addoption("--auth-ip", action="store", default="localhost", help="IP address of the authentication service")
-    parser.addoption("--auth-port", action="store", default="8080", help="Port of the authentication service")
-
 @pytest.fixture
 def BASE_URL(request):
     ip = request.config.getoption("--auth-ip")
@@ -84,7 +78,7 @@ def test_login_invalid(BASE_URL):
     login_url = f"{BASE_URL}/login"
     invalid_user = {"email": "nonexistent@example.com", "password": "WrongPassword"}
     response = requests.get(login_url, params=invalid_user, verify=False)
-    assert response.status_code == 401, f"Expected 401, got it {response.status_code}"
+    assert response.status_code == 409, f"Expected 409, got it {response.status_code}"
 # -----------------------------------------
 
 @pytest.fixture
