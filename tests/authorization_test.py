@@ -2,8 +2,18 @@ import pytest
 import requests
 import pymysql
 
-BASE_URL = "https://localhost:8080"
+# BASE_URL = "https://localhost:8080"
 
+def pytest_addoption(parser):
+    parser.addoption("--auth-ip", action="store", default="localhost", help="IP address of the authentication service")
+    parser.addoption("--auth-port", action="store", default="8080", help="Port of the authentication service")
+
+@pytest.fixture
+def BASE_URL(request):
+    ip = request.config.getoption("--auth-ip")
+    port = request.config.getoption("--auth-port")
+    return f"https://{ip}:{port}"
+    
 @pytest.fixture(autouse=True)
 def clean_db():
     connection = pymysql.connect(
@@ -23,7 +33,7 @@ def clean_db():
         connection.close()
 # -----------------------------------------
 
-def test_registration_success():
+def test_registration_success(BASE_URL):
     url = f"{BASE_URL}/register"
     response = requests.post(
         url,
@@ -36,7 +46,7 @@ def test_registration_success():
     assert response.status_code == 201, f"Expected 201, received {response.status_code}"
 # -----------------------------------------
 
-def test_registration_duplicate():
+def test_registration_duplicate(BASE_URL):
     url = f"{BASE_URL}/register"
     user = {
         "email": "testuser2@example.com",
@@ -53,7 +63,7 @@ def test_registration_duplicate():
     assert response2.status_code == 500, f"Expected 500 when duplicating, received{response2.status_code}"
 # -----------------------------------------
 
-def test_login_success():
+def test_login_success(BASE_URL):
     register_url = f"{BASE_URL}/register"
     user = {
         "email": "testuser3@example.com",
@@ -70,8 +80,7 @@ def test_login_success():
     assert "token" in data, "The response does not contain a JWT token"
 # -----------------------------------------
 
-@pytest.fixture
-def test_login_invalid():
+def test_login_invalid(BASE_URL):
     login_url = f"{BASE_URL}/login"
     invalid_user = {"email": "nonexistent@example.com", "password": "WrongPassword"}
     response = requests.get(login_url, params=invalid_user, verify=False)
@@ -79,7 +88,7 @@ def test_login_invalid():
 # -----------------------------------------
 
 @pytest.fixture
-def jwt_token():
+def jwt_token(BASE_URL):
     register_url = f"{BASE_URL}/register"
     user = {
         "email": "testuser4@example.com",
@@ -94,7 +103,7 @@ def jwt_token():
     assert token is not None, "JWT token not received during login"
     return token
 
-def test_validate_success(jwt_token):
+def test_validate_success(jwt_token, BASE_URL):
     url = f"{BASE_URL}/validate"
     payload = {
         "token": jwt_token
@@ -103,7 +112,7 @@ def test_validate_success(jwt_token):
 
     assert response.status_code == 200, f"Expected 200, received {response.status_code}"
 
-def test_validate_invalid_token():
+def test_validate_invalid_token(BASE_URL):
     url = f"{BASE_URL}/validate"
     payload = {
         "token": "invalidtoken"
