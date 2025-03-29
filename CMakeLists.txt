@@ -6,6 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/cpp-httplib)
 include_directories(${CMAKE_SOURCE_DIR}/lib/mysql_orm/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/jwt-cpp/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/nlohmann/json/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/googletest)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/models)
 include_directories(${CMAKE_SOURCE_DIR}/src/services)
@@ -45,12 +46,6 @@ target_link_libraries(AuthService
   odb-mysql
 )	
 
-find_library(MYSQL_CLIENT_LIBRARY mysqlclient)
-if(NOT MYSQL_CLIENT_LIBRARY)
-  message(FATAL_ERROR "mysqlclient not found")
-endif()
-target_link_libraries(AuthService ${MYSQL_CLIENT_LIBRARY})
-
 add_custom_command(
     TARGET AuthService POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -58,3 +53,26 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/src/cert.pem $<TARGET_FILE_DIR:AuthService>/cert.pem
 )
+
+# --------------------- Testing ---------------------
+
+enable_testing()
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/googletest)
+
+include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googlemock/include)
+
+add_executable(AuthServiceTests tests/gTest.cpp)
+
+target_link_libraries(AuthServiceTests 
+    gtest 
+    gtest_main 
+    gmock 
+    gmock_main 
+    pthread
+    OpenSSL::SSL 
+    OpenSSL::Crypto
+)
+
+add_test(NAME AuthServiceTests COMMAND AuthServiceTests)

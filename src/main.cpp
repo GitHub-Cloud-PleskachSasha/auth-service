@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 
 #include "AuthService.hpp"
+#include "./repositories/PersonRepository.hpp"
 
 #include <odb/mysql/database.hxx>
 

@@ -3,44 +3,18 @@
 #include <memory>
 #include <httplib.h>
 #include <jwt-cpp/jwt.h>
-#include "../repositories/PersonRepository.hpp"
+#include "IAuthService.hpp"
+#include "../repositories/IPersonRepository.hpp"
 
-struct RegistrationResult {
-    bool success;
-    int errorCode;
-    std::string errorMessage;
-};
 
-struct LoginResult {
-    bool success;
-    int errorCode;
-    std::string errorMessage;
-    std::string token;
-};
-
-struct TokenValidationResult {
-    bool success;
-    int errorCode;
-    std::string errorMessage;
-    bool valid;
-    std::string userId;
-    std::string email;
-};
-
-struct PasswordChangeResult {
-    bool success;
-    int errorCode;
-    std::string errorMessage;
-};
-
-class AuthService {
+class AuthService : public IAuthService {
 public:
-    AuthService(std::shared_ptr<PersonRepository> repo)
+    AuthService(std::shared_ptr<IPersonRepository> repo)
         : repo(repo){
 
     }
 
-    RegistrationResult registerUser(const std::string& email, const std::string& password) {
+    RegistrationResult registerUser(const std::string& email, const std::string& password) override {
         RegistrationResult result;
 
         if (email.empty() || password.empty()) {
@@ -61,11 +35,7 @@ public:
             result.success = true;
             result.errorCode = 0;
             result.errorMessage = "";
-        } catch (const odb::exception& e) {
-            result.success = false;
-            result.errorCode = 500;
-            result.errorMessage = "Database error: " + std::string(e.what());
-        }
+        } 
         catch (const std::exception& e) {
             result.success = false;
             result.errorCode = 500;
@@ -75,7 +45,7 @@ public:
         return result;
     }
     
-    LoginResult loginUser(const std::string& email, const std::string& password) {
+    LoginResult loginUser(const std::string& email, const std::string& password) override {
         LoginResult result;
 
         if (email.empty() || password.empty()) {
@@ -98,11 +68,6 @@ public:
                 result.errorCode = 0;
             }
         }
-        catch (const odb::exception& e) {
-            result.success = false;
-            result.errorCode = 500;
-            result.errorMessage = "Database error: " + std::string(e.what());
-        }
         catch (const std::exception& e) {
             result.success = false;
             result.errorCode = 500;
@@ -112,7 +77,7 @@ public:
         return result;
     }
 
-    TokenValidationResult validateToken(const std::string& token) {
+    TokenValidationResult validateToken(const std::string& token) override {
         TokenValidationResult result;
 
         if (token.empty()) {
@@ -147,7 +112,7 @@ public:
         return result;
     }
 
-    PasswordChangeResult changePassword(const std::string& email, const std::string& oldPassword, const std::string& newPassword) {
+    PasswordChangeResult changePassword(const std::string& email, const std::string& oldPassword, const std::string& newPassword) override {
         PasswordChangeResult result;
         
         if (email.empty() || oldPassword.empty() || newPassword.empty()) {
@@ -178,11 +143,6 @@ public:
                 result.errorMessage = "Password successfully updated";
             }
         }
-        catch (const odb::exception& e) {
-            result.success = false;
-            result.errorCode = 500;
-            result.errorMessage = "Error while changing password:" + std::string(e.what());
-        }
         catch (const std::exception& e) {
             result.success = false;
             result.errorCode = 500;
@@ -193,5 +153,5 @@ public:
     }
 
 private:
-    std::shared_ptr<PersonRepository> repo;
+    std::shared_ptr<IPersonRepository> repo;
 };
