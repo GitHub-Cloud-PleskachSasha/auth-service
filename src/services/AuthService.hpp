@@ -56,9 +56,9 @@ public:
         }
 
         try {
-            bool isCreated = repo->personExist(email, password);
+            bool exists = repo->personExist(email, password);
            
-            if (isCreated) {
+            if (!exists) {
                 result.success = false;
                 result.errorCode = 409;
                 result.errorMessage = "Login failed: no matching user";
@@ -123,9 +123,9 @@ public:
         }
         
         try {
-            bool isCreated = repo->personExist(email, oldPassword);
+            bool exists = repo->personExist(email, oldPassword);
             
-            if (isCreated) {
+            if (!exists) {
                 result.success = false;
                 result.errorCode = 401;
                 result.errorMessage = "Password change failed: incorrect email or old password.";
