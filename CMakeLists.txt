@@ -60,7 +60,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/googletest)
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googlemock/include)
 
-add_executable(AuthServiceTests tests/gTest.cpp)
+add_executable(AuthServiceTests tests/GoogleTests/gTest.cpp)
 
 target_link_libraries(AuthServiceTests 
     gtest 
