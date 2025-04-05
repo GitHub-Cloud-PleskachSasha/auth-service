@@ -4,7 +4,7 @@
 #include <httplib.h>
 #include <jwt-cpp/jwt.h>
 #include "IAuthService.hpp"
-#include "../repositories/IPersonRepository.hpp"
+#include "IPersonRepository.hpp"
 
 
 class AuthService : public IAuthService {
