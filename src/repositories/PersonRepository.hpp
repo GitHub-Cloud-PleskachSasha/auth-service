@@ -49,7 +49,7 @@ public:
             odb::query<person>::password == password
         ));
 
-        return p.empty();
+        return !p.empty();
     }
 
     odb::result<person> getPerson(const std::string& email, const std::string& password) {

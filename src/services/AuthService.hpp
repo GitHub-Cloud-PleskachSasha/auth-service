@@ -11,7 +11,6 @@ class AuthService : public IAuthService {
 public:
     AuthService(std::shared_ptr<IPersonRepository> repo)
         : repo(repo){
-
     }
 
     RegistrationResult registerUser(const std::string& email, const std::string& password) override {
