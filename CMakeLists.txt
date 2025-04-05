@@ -21,12 +21,9 @@ set(GEN_DIR ${CMAKE_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${GEN_DIR})
 
 find_program(ODB_COMPILER odb)
-if(NOT ODB_COMPILER)
-  message(FATAL_ERROR "Не знайдено ODB компілятор!")
+if(NOT ODB_COMPILER) 
+  message(FATAL_ERROR "ODB compiler not found!")
 endif()
-
-set(PERSON_HXX ${CMAKE_SOURCE_DIR}/src/person.hxx)
-set(PERSON_ODB_CPP ${GEN_DIR}/person-odb.cxx)
 
 add_custom_command(
   OUTPUT ${GEN_DIR}/person-odb.cxx ${GEN_DIR}/person-odb.hxx
