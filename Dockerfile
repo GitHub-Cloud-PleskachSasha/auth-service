@@ -38,7 +38,7 @@ RUN apt-get update && \
     apt-get clean
     
 COPY --from=builder /app/build/AuthService /app/
-COPY --from=builder /app/cert.pem /app/
-COPY --from=builder /app/key.pem /app/
+COPY --from=builder /app/.env/cert.pem /app/
+COPY --from=builder /app/.env/key.pem /app/
 
 CMD ["/app/AuthService"]

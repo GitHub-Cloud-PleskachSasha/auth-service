@@ -12,8 +12,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src/models)
 include_directories(${CMAKE_SOURCE_DIR}/src/services)
 include_directories(${CMAKE_SOURCE_DIR}/src/repositories)
 
-configure_file(${CMAKE_SOURCE_DIR}/src/key.pem ${CMAKE_BINARY_DIR}/key.pem COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/src/cert.pem ${CMAKE_BINARY_DIR}/cert.pem COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/.env/key.pem ${CMAKE_BINARY_DIR}/key.pem COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/.env/cert.pem ${CMAKE_BINARY_DIR}/cert.pem COPYONLY)
 
 find_package(OpenSSL REQUIRED)
 
@@ -46,9 +46,9 @@ target_link_libraries(AuthService
 add_custom_command(
     TARGET AuthService POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/src/key.pem $<TARGET_FILE_DIR:AuthService>/key.pem
+            ${CMAKE_SOURCE_DIR}/.env/key.pem $<TARGET_FILE_DIR:AuthService>/key.pem
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/src/cert.pem $<TARGET_FILE_DIR:AuthService>/cert.pem
+            ${CMAKE_SOURCE_DIR}/.env/cert.pem $<TARGET_FILE_DIR:AuthService>/cert.pem
 )
 
 # --------------------- Testing ---------------------
